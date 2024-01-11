@@ -41,7 +41,7 @@ def detect_sphere(frame):
         minDist=50,
         param1=50,
         param2=30,
-        minRadius=10,
+        minRadius=30,
         maxRadius=100
     )
 
@@ -58,48 +58,52 @@ def detect_sphere(frame):
 
     return frame
 
-def main():
-    # Open the webcam
+def get_balloon_loc(frame, detection_settings):
+
+    # Define the color range for the ball
+    lower_color = np.array([detection_settings["hue_lower"], detection_settings["saturation_lower"], detection_settings["value_lower"]])
+    upper_color = np.array([detection_settings[ "hue_upper"], detection_settings["saturation_upper"], detection_settings["value_upper"]])
+
+    # Detect the ball and make the rest of the frame black
+    result_frame, mask = detect_ball(frame, lower_color, upper_color)
+
+    # Detect the sphere using HoughCircles and draw circles
+    result_frame_with_circles = detect_sphere(result_frame)
+
+    # Display the frame with the detected object and projected circles
+    cv2.imshow("Object Detection", result_frame_with_circles)
+
+    # Break the loop if 'q' is pressed
+
+    # Release the webcam and close the window
+
+if __name__ == "__main__":
     cap = cv2.VideoCapture(0)
 
     while True:
-        # Read a frame from the webcam
+        hue_lower = 17 #cv2.getTrackbarPos("Hue Lower", "Color Range Adjustments")
+        saturation_lower = 97 #cv2.getTrackbarPos("Saturation Lower", "Color Range Adjustments")
+        value_lower = 0 #cv2.getTrackbarPos("Value Lower", "Color Range Adjustments")
+        hue_upper = 55 #cv2.getTrackbarPos("Hue Upper", "Color Range Adjustments")
+        saturation_upper = 255 #cv2.getTrackbarPos("Saturation Upper", "Color Range Adjustments")
+        value_upper = 255 #cv2.getTrackbarPos("Value Upper", "Color Range Adjustments")
+
+        detection_settings = {
+            "hue_lower": hue_lower,
+            "saturation_lower": saturation_lower,
+            "value_lower": value_lower,
+            "hue_upper": hue_upper,
+            "saturation_upper": saturation_upper,
+            "value_upper": value_upper
+        }
         ret, frame = cap.read()
+        get_balloon_loc(frame, detection_settings)
 
-        # Check if the frame is read successfully
-        if not ret:
-            print("Error reading frame from webcam")
-            break
-
-        # Get current trackbar positions
-        hue_lower = cv2.getTrackbarPos("Hue Lower", "Color Range Adjustments")
-        saturation_lower = cv2.getTrackbarPos("Saturation Lower", "Color Range Adjustments")
-        value_lower = cv2.getTrackbarPos("Value Lower", "Color Range Adjustments")
-        hue_upper = cv2.getTrackbarPos("Hue Upper", "Color Range Adjustments")
-        saturation_upper = cv2.getTrackbarPos("Saturation Upper", "Color Range Adjustments")
-        value_upper = cv2.getTrackbarPos("Value Upper", "Color Range Adjustments")
-
-        # Define the color range for the ball
-        lower_color = np.array([hue_lower, saturation_lower, value_lower])
-        upper_color = np.array([hue_upper, saturation_upper, value_upper])
-
-        # Detect the ball and make the rest of the frame black
-        result_frame, mask = detect_ball(frame, lower_color, upper_color)
-
-        # Detect the sphere using HoughCircles and draw circles
-        result_frame_with_circles = detect_sphere(result_frame)
-
-        # Display the frame with the detected object and projected circles
-        cv2.imshow("Object Detection", result_frame_with_circles)
-
-        # Break the loop if 'q' is pressed
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
             break
 
-    # Release the webcam and close the window
     cap.release()
     cv2.destroyAllWindows()
 
-if __name__ == "__main__":
-    main()
+
