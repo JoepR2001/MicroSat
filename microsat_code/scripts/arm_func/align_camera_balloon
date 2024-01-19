@@ -7,7 +7,7 @@ def distance_check(target_distance):
     else:
         return false
 
-def calculate_movement(target_distance, target_center_x, target_center_y, pixel_circumference):
+def calculate_movement(target_distance, target_center_x, target_center_y):
     # Fixed values
     distance_scaler = 0.01  # Adjust as needed
     image_resolution = (1440, 1080)  # Adjust as needed

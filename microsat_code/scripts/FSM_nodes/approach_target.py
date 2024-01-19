@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from FSM_controller import StateMachine
-from base_pos_controller import publish_move_goal
+from base_func.base_pos_controller import publish_move_goal
 from joint_controller import send_follow_joint_trajectory_action_goal
 from data_handler import DataHandler
 from actionlib_msgs.msg import GoalStatusArray
