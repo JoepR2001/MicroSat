@@ -23,6 +23,7 @@ rospy.sleep(1)
 
 def allign_arm():
     distance_to_move = 10
+    #placeholder target location data input from balloon detector
     while distance_to_move < 0.01:
         target_location = calculate_movement(target_distance, target_center_x, target_center_y)
         arm_moving_angle = target_location[1]
